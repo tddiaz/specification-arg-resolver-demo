@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = MainApplication.class)
-public class WebIntegrationTest {
+public class FilterTest {
 
     @LocalServerPort
     private int serverPort;
@@ -59,6 +59,21 @@ public class WebIntegrationTest {
     @After
     public void cleanUp() {
         artistRepository.deleteAll();
+    }
+
+    @Test
+    public void givenWithoutFilterParams_whenGetAll_shouldReturnAllValues() throws Exception {
+        Response response = given()
+                .log()
+                .all()
+                .port(serverPort)
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/artists").andReturn();
+
+        List<Artist> artists = OBJECT_MAPPER.readValue(response.getBody().asString(), List.class);
+
+        assertThat(artists).hasSize(4);
     }
 
     @Test
@@ -126,7 +141,7 @@ public class WebIntegrationTest {
     public void testFilterByReleaseDateRange() throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put("albumReleaseDateAfter", "2000-01-01");
-        params.put("albumReleaseDateBefore", "2005-01-01");
+        params.put("albumReleaseDateBefore", "2006-01-01");
 
         Response response = given()
                 .log()
@@ -139,7 +154,7 @@ public class WebIntegrationTest {
 
         List<Artist> artists = OBJECT_MAPPER.readValue(response.getBody().asString(), List.class);
 
-        assertThat(artists).hasSize(2);
+        assertThat(artists).hasSize(3);
         assertThat(artists).extracting("artistName").contains("tony", "steve", "peter quill");
     }
 }

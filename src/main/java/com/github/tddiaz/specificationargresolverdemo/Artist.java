@@ -2,11 +2,7 @@ package com.github.tddiaz.specificationargresolverdemo;
 
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -18,7 +14,7 @@ public class Artist extends AbstractEntity {
 
     private BigDecimal netWorth;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     private Genre genre;
 
     @OneToMany(cascade = CascadeType.ALL)
